@@ -29,3 +29,21 @@ const tstr = s =>
     .map(w => w.replace(/[^a-z]/gi, '')))
     .filter(w => woerter.has(w))
     .join(',')
+
+const addArticle = w => {
+    try {
+        const gender = words.getGenderGermanWord(null, list, w)
+        if (gender == 'M') {
+            return 'der ' + w
+        }
+        else if (gender == 'F') {
+            return 'die ' + w
+        }
+        else {
+            return 'das ' + w
+        }
+    }
+    catch (e) {
+        return w
+    }
+}
