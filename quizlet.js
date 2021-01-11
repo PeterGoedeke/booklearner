@@ -22,13 +22,43 @@ async function makeRequest(q) {
     return response.data
 }
 
+async function makeRequests(qs) {
+    const responses = await Promise.all(qs.map(makeRequest))
+    const results = response.map(parse)
+    return results.join('\n')
+}
+
+const tstrs = s => {
 const uniq = arr => Array.from(new Set(arr))
 
-const tstr = s =>
-    uniq(s.split(/\s/)
-    .map(w => w.replace(/[^a-z]/gi, '')))
+    const listwords = s =>
+    uniq(
+        s.split(/\s/)
+        .map(w => w.replace(/[^a-z]/gi, ''))
+        )
     .filter(w => woerter.has(w))
-    .join(',')
+        
+    const split = a => {
+        const rs = []
+        let i = -1
+        for (const word of a) {
+            if (!rs[i] || rs[i].length + word.length + 1 > 10) {
+                rs[++i] = word
+                // console.log(word);
+            }
+            else {
+                rs[i] += ',' + word
+            }
+        }
+        return rs
+    }
+    return split(listwords(s))
+}
+    
+(async function() {
+    // makeRequests(tstrs('sehen gehen du'))
+})()
+    
 
 const addArticle = w => {
     try {
@@ -60,5 +90,5 @@ const parse = r => r.data
                     console.log(a.confidence, a.confidence,  isNaN(a.confidence))
                     return b.confidence - a.confidence
                 })
-                .map(e => e.translation + ' ' + e.confidence).join(' | ')
+                .map(e => e.translation).join(' | ')
     )).join('\n')

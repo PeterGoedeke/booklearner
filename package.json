@@ -8,7 +8,7 @@
   },
   "dependencies": {
     "@hapi/joi": "^17.1.1",
-    "axios": "^0.21.0",
+    "axios": "^0.21.1",
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",
     "dotenv": "^8.2.0",
@@ -20,6 +20,7 @@
     "joi-objectid": "^3.0.1",
     "mongoose": "^5.10.13",
     "morgan": "~1.9.1",
+    "pdf-parse": "^1.1.1",
     "ramda": "^0.27.1"
   },
   "devDependencies": {
