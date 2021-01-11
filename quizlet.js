@@ -21,3 +21,11 @@ async function makeRequest(q) {
     })
     return response.data
 }
+
+const uniq = arr => Array.from(new Set(arr))
+
+const tstr = s =>
+    uniq(s.split(/\s/)
+    .map(w => w.replace(/[^a-z]/gi, '')))
+    .filter(w => woerter.has(w))
+    .join(',')
