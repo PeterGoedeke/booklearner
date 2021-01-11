@@ -47,3 +47,18 @@ const addArticle = w => {
         return w
     }
 }
+
+const parse = r => r.data
+    .map(t => 
+        addArticle(t.term)
+        + ','
+        + (t.translations.length == 1
+            ? t.translations[0].translation
+            : t.translations
+                .filter(e => e.confidence > 0.8)
+                .sort((a, b) => {
+                    console.log(a.confidence, a.confidence,  isNaN(a.confidence))
+                    return b.confidence - a.confidence
+                })
+                .map(e => e.translation + ' ' + e.confidence).join(' | ')
+    )).join('\n')
