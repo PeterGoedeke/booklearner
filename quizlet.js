@@ -1,12 +1,11 @@
 require('dotenv').config()
 const axios = require('axios')
 
-const woerter = new Set(require('./routes/woerter.json'))
+const woerter = new Set(require('./woerter.json'))
 const words = require('german-words')
 const list = require('german-words-dict')
 
 async function makeRequest(q) {
-    console.log('yeet');
     const response = await axios.get(process.env.WEBIT_URL, {
         params: {
             q,
