@@ -58,14 +58,14 @@ async function makeRequests(qs) {
 }
 
 const qs = (function() {
-const uniq = arr => Array.from(new Set(arr))
-
+    const uniq = arr => Array.from(new Set(arr))
+    
     const listwords = s =>
     uniq(
         s.split(/\s/)
         .map(w => w.replace(/[^a-z]/gi, ''))
         )
-    .filter(w => woerter.has(w))
+        .filter(w => woerter.has(w))
         
     // const split = a => {
     //     const rs = []
@@ -95,10 +95,10 @@ const uniq = arr => Array.from(new Set(arr))
         ))
         const parts = partition(is(String), results)
         return [split(parts[0]), parts[1].map(thing).join('\n')]
-            }
+    }
     return {
         run
-        }
+    }
 })()
 
 
@@ -106,14 +106,14 @@ const putTogether = async s => {
     const [qss, ws] = await qs.run(s)
     const rs = await makeRequests(qss)
     return rs + '\n' + ws
-    }
+}
     
 ;(async function() {
     // const final = await putTogether('sehen du ein zwei')
     // console.log('yeeeeeeeeeeeeeeeeeeeeee')
     // console.log(final)
     // console.log(strings)
-    
+
     // const response = await makeRequests(strings)
     // console.log(response)
 
@@ -136,13 +136,13 @@ const parser = (function() {
     //                 })
     //                 .map(e => e.translation).join(' | ')
     //     )).join('\n')
-const parse = r => r.data
+    const parse = r => r.data
         .map(t => [
             addArticle(t.term),
             (t.translations.length == 1
-            ? t.translations[0].translation
-            : t.translations
-                .filter(e => e.confidence > 0.8)
+                ? t.translations[0].translation
+                : t.translations
+                    .filter(e => e.confidence > 0.8)
                     .sort((a, b) => b.confidence - a.confidence)
                     .map(e => e.translation).join(' | ')
             )]
@@ -157,7 +157,7 @@ const parse = r => r.data
                 translation: r[1]
             })
             word.save().catch(console.log)
-                })
+        })
     }
 
     const tocsv = rs => rs.map(r => r.join(',')).join('\n')
