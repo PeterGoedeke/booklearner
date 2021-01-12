@@ -100,44 +100,80 @@ const uniq = arr => Array.from(new Set(arr))
         run
         }
 })()
+
+
+const putTogether = async s => {
+    const [qss, ws] = await qs.run(s)
+    const rs = await makeRequests(qss)
+    return rs + '\n' + ws
     }
-    return split(listwords(s))
-}
     
-(async function() {
-    // makeRequests(tstrs('sehen gehen du'))
+;(async function() {
+    // const final = await putTogether('sehen du ein zwei')
+    // console.log('yeeeeeeeeeeeeeeeeeeeeee')
+    // console.log(final)
+    // console.log(strings)
+    
+    // const response = await makeRequests(strings)
+    // console.log(response)
+
+
+    // console.log(parser.run(await makeRequests(tstrs('ausmachen du hassen, Tier'))))
 })()
-    
 
-const addArticle = w => {
-    try {
-        const gender = words.getGenderGermanWord(null, list, w)
-        if (gender == 'M') {
-            return 'der ' + w
-        }
-        else if (gender == 'F') {
-            return 'die ' + w
-        }
-        else {
-            return 'das ' + w
-        }
-    }
-    catch (e) {
-        return w
-    }
-}
-
+const parser = (function() {
+    // const parse = r => r.data
+    //     .map(t => 
+    //         addArticle(t.term)
+    //         + ','
+    //         + (t.translations.length == 1
+    //             ? t.translations[0].translation
+    //             : t.translations
+    //                 .filter(e => e.confidence > 0.8)
+    //                 .sort((a, b) => {
+    //                     console.log(a.confidence, a.confidence,  isNaN(a.confidence))
+    //                     return b.confidence - a.confidence
+    //                 })
+    //                 .map(e => e.translation).join(' | ')
+    //     )).join('\n')
 const parse = r => r.data
-    .map(t => 
-        addArticle(t.term)
-        + ','
-        + (t.translations.length == 1
+        .map(t => [
+            addArticle(t.term),
+            (t.translations.length == 1
             ? t.translations[0].translation
             : t.translations
                 .filter(e => e.confidence > 0.8)
-                .sort((a, b) => {
-                    console.log(a.confidence, a.confidence,  isNaN(a.confidence))
-                    return b.confidence - a.confidence
+                    .sort((a, b) => b.confidence - a.confidence)
+                    .map(e => e.translation).join(' | ')
+            )]
+        )
+    
+    const cache = rs => {
+        rs.forEach(r => {
+            const word = new Word({
+                source: 'de',
+                dest: 'en',
+                text: r[0],
+                translation: r[1]
+            })
+            word.save().catch(console.log)
                 })
-                .map(e => e.translation).join(' | ')
-    )).join('\n')
+    }
+
+    const tocsv = rs => rs.map(r => r.join(',')).join('\n')
+
+    return {
+        run: function(r) {
+            if (r.data == null) {
+                return ''
+            }
+            const parsed = parse(r)
+            cache(parsed)
+            return tocsv(parsed)
+        }
+    }
+})()
+
+module.exports = {
+    tstrs: putTogether
+}
