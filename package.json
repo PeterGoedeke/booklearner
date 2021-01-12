@@ -9,10 +9,12 @@
   "dependencies": {
     "@hapi/joi": "^17.1.1",
     "axios": "^0.21.1",
+    "body-parser": "^1.19.0",
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",
     "dotenv": "^8.2.0",
     "express": "~4.16.1",
+    "formidable": "^1.2.2",
     "german-words": "^3.1.2",
     "german-words-dict": "^1.1.2",
     "http-errors": "~1.6.3",
@@ -21,6 +23,7 @@
     "mongoose": "^5.10.13",
     "morgan": "~1.9.1",
     "pdf-parse": "^1.1.1",
+    "pug": "^3.0.0",
     "ramda": "^0.27.1"
   },
   "devDependencies": {

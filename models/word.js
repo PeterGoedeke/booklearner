@@ -1,25 +1,21 @@
 const mongoose = require('mongoose')
 
 const WordSchema = new mongoose.Schema({
-    english: {
+    source: {
         type: String,
         required: true
     },
-    german: {
+    dest: {
         type: String,
         required: true
     },
-    ready: {
-        type: Number,
-        default: 0
-    },
-    level: {
-        type: Number,
-        default: 0
-    },
-    list: {
+    text: {
         type: String,
-        default: 'global'
+        required: true
+    },
+    translation: {
+        type: String,
+        required: true
     }
 })
 

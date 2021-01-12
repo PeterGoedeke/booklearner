@@ -44,10 +44,4 @@ process.on('SIGTERM', () => {
 })
 
 require('./word')
-require('./linkresponse')
-
-let url = 'lol';
-let download = (_url: string) => {};
-
-url: https://www.pyotr.com/cp.zip
-download(url)
+require('./apiresponse')
