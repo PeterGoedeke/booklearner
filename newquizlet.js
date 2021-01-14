@@ -31,6 +31,20 @@ const getFromCache = async w => {
     }
 }
 
+const textToTranslations = async s => {
+    const words = textToWords(s)
+    const cacheResults = await Promise.all(words.map(getFromCache))
+    const r = await partitionCachedUncached(cacheResults)
+
+    const parsedResults = (await Promise.all(r.uncachedAsQueries.map(makeRequest)))
+        .map(parseRequest)
+
+    parsedResults.map(cacheParsedRequest)
+    console.log(parsedResults.map(parsedRequestToCSV))
+    console.log(r.cachedAsCSV)
+    return parsedResults.map(parsedRequestToCSV) + '\n' + r.cachedAsCSV
+}
+
 const partitionCachedUncached = async cacheResults => {
     const [cached, uncached] = partition(r => r.wasCached, cacheResults)
     const cachedAsCSV = cached.map(c => c.result.text + ',' + c.result.translation).join('\n')
@@ -38,6 +52,9 @@ const partitionCachedUncached = async cacheResults => {
     
     return { cachedAsCSV, uncachedAsQueries }
 }
+
+// textToTranslations('Hund Pferd Schwein Schweinchen Hahn Fisch Kaninchen Meerschweinchen')
+// textToTranslations('Hund Pferd Schwein Schweinchen Hahn Fisch Kaninchen Meerschweinchen')
 
 async function makeRequest(q) {
     console.log('making the request!', q)
@@ -60,3 +77,31 @@ async function makeRequest(q) {
 
     return response.data
 }
+
+const parseRequest = r => r.data
+    .map(t => [
+        addArticle.de(t.term),
+        (t.translations.length == 1
+            ? t.translations[0].translation
+            : t.translations
+                .filter(e => e.confidence > 0.5 || e.is_reliable)
+                .sort((a, b) => b.confidence - a.confidence)
+                .map(e => e.translation).join(' | ')
+        )]
+    )
+
+const cacheParsedRequest = r => {
+    r.forEach(t => {
+        const word = new Word({
+            source: 'de',
+            dest: 'en',
+            text: t[0],
+            translation: t[1]
+        })
+        word.save().catch(console.log)
+    })
+}
+
+const parsedRequestToCSV = r => r.map(t => t.join(',')).join('\n')
+
+module.exports = textToTranslations

@@ -9,7 +9,7 @@ const bodyParser = require('body-parser');
 
 require('./models/db')
 
-const indexRouter = require('./routes/index')
+// const indexRouter = require('./routes/index')
 
 const app = express()
 
@@ -24,7 +24,9 @@ app.use(cookieParser())
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')))
 
-app.use('/', indexRouter)
+// app.use('/', indexRouter)
+
+require('./newquizlet')
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -41,5 +43,7 @@ app.use(function(err, req, res, next) {
     res.status(err.status || 500)
     res.render('error', { error: err })
 })
+
+
 
 module.exports = app
