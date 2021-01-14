@@ -1,8 +1,7 @@
 const router = require('express').Router()
-const controller = require('../controllers/index')
 const formidable = require('formidable')
 
-const { tstrs } = require('../quizlet')
+const translate = require('../newquizlet')
 
 const fs = require('fs');
 const pdf = require('pdf-parse');
@@ -39,7 +38,7 @@ router.post('/submitpdf', (req, res) => {
             fs.readFile(file.path, async (err, data) => {
                 try {
                     const result = await pdf(data)
-                    const things = await tstrs(result.text)
+                    const things = await translate(result.text)
                     res.status(200)
                         .attachment(`test.csv`)
                         .send(things)
