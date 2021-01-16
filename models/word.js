@@ -15,7 +15,6 @@ const WordSchema = new mongoose.Schema({
     },
     translation: {
         type: String,
-        required: true
     }
 })
 
