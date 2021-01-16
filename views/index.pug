@@ -1,5 +1,18 @@
 div
-    form(action="submitpdf" method="POST" enctype="multipart/form-data")
-        input(type="file" name="pdffile")
-        input(type="text" name="yeet")
+    form(action="submit" method="POST" enctype="multipart/form-data")
+        input(type="file" name="file")
+
+        label(for="source") Source: 
+        select(name="source")
+            option(value="de") de
+            option(value="en") en
+            option(value="es") es
+
+        label(for="dest") Dest: 
+        select(name="dest")
+            option(value="de") de
+            option(value="en" selected) en
+            option(value="es") es
         input(type="submit")
+
+script(src="disallow_duplicates.js")
