@@ -23,6 +23,7 @@
     "http-errors": "~1.6.3",
     "jade": "~1.11.0",
     "joi-objectid": "^3.0.1",
+    "jsdom": "^16.4.0",
     "mongoose": "^5.10.13",
     "morgan": "~1.9.1",
     "pdf-parse": "^1.1.1",

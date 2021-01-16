@@ -9,6 +9,8 @@ div PDF to vocabulary list
 
 form(action="submit" method="POST" enctype="multipart/form-data")
     input(type="file" name="file")
+    input(type="text" name="text" placeholder="Alternatively, paste text here...")
+    input(type="text" name="url" placeholder="Or, paste a url here...")
 
     label(for="source") Source: 
     select(name="source")

@@ -44,24 +44,29 @@ const partitionCachedUncached = async cacheResults => {
 
 const makeRequest = curryN(3, async function (source, dest, q) {
     console.log(`Requesting word ${q} in ${source} to ${dest}`)
-    const response = await axios.get(process.env.WEBIT_URL, {
-        params: {
-            q,
-            from: source,
-            to: dest,
-            force_v2: true,
-            webit_magic_key: 'UNKPMGYKGLPDWRJ3'
-        },
-        // required headers for rapidapi
-        headers: {
-            'x-rapidapi-host': 'webit-language.p.rapidapi.com',
-            'x-rapidapi-key': process.env.WEBIT_API_KEY
-        }
-    })
-    const apiResponse = new ApiResponse(response.data)
-    apiResponse.save().catch(console.log)
-
-    return response.data
+    try {
+        const response = await axios.get(process.env.WEBIT_URL, {
+            params: {
+                q,
+                from: source,
+                to: dest,
+                force_v2: true,
+                webit_magic_key: 'UNKPMGYKGLPDWRJ3'
+            },
+            // required headers for rapidapi
+            headers: {
+                'x-rapidapi-host': 'webit-language.p.rapidapi.com',
+                'x-rapidapi-key': process.env.WEBIT_API_KEY
+            }
+        })
+        const apiResponse = new ApiResponse(response.data)
+        apiResponse.save().catch(console.log)
+    
+        return response.data
+    }
+    catch (e) {
+        console.warn(e)
+    }
 })
 
 module.exports = textToTranslations
