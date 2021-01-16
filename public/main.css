@@ -1,0 +1,35 @@
+form {
+    height: 50vh;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;   
+    flex-wrap: wrap;
+    align-content: center;
+}
+
+input, select {
+    width: 95%;
+    box-sizing: border-box;
+    border-radius: 5px;
+    background-color: aquamarine;
+    height: 10vw;
+    font-size: 200%;   
+}
+select {
+    width: 20%;
+    margin: 1vh 0;
+}
+
+option {
+    text-align: center;
+}
+
+label {
+    font-size: 200%;
+}
+
+body {
+    background-color: lightblue;
+    overflow: hidden;
+}

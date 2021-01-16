@@ -1,18 +1,28 @@
+head
+    title PDF2List
+    script(src="disallow_duplicates.js")
+    link(rel="stylesheet" href="main.css")
+    link(rel="icon" href="/favicon-16x16.png" sizes="16x16" type="image/png")
+    link(rel="icon" href="/favicon-32x32.png" sizes="32x32" type="image/png")
+
+div PDF to vocabulary list
+
+form(action="submit" method="POST" enctype="multipart/form-data")
+    input(type="file" name="file")
+
+    label(for="source") Source: 
+    select(name="source")
+        option(value="de") de
+        option(value="en") en
+        option(value="es") es
+
+    label(for="dest") Dest: 
+    select(name="dest")
+        option(value="de") de
+        option(value="en" selected) en
+        option(value="es") es
+    input(type="submit")
+
 div
-    form(action="submit" method="POST" enctype="multipart/form-data")
-        input(type="file" name="file")
-
-        label(for="source") Source: 
-        select(name="source")
-            option(value="de") de
-            option(value="en") en
-            option(value="es") es
-
-        label(for="dest") Dest: 
-        select(name="dest")
-            option(value="de") de
-            option(value="en" selected) en
-            option(value="es") es
-        input(type="submit")
-
-script(src="disallow_duplicates.js")
+    h1 How does it work?
+    p You upload a PDF file, select the language that the file is in and the language that you wish the output vocabulary list to be in, and then wait for a csv to be downloaded to your computer. This csv can then be given to a service such as Quizlet, which could be used to practise the vocabulary list or to print it.
