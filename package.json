@@ -8,6 +8,9 @@
   },
   "dependencies": {
     "@hapi/joi": "^17.1.1",
+    "an-array-of-english-words": "^2.0.0",
+    "an-array-of-german-words": "^1.2.0",
+    "an-array-of-spanish-words": "^2.0.0",
     "axios": "^0.21.1",
     "body-parser": "^1.19.0",
     "cookie-parser": "~1.4.4",
@@ -24,7 +27,8 @@
     "morgan": "~1.9.1",
     "pdf-parse": "^1.1.1",
     "pug": "^3.0.0",
-    "ramda": "^0.27.1"
+    "ramda": "^0.27.1",
+    "xregexp": "^4.4.1"
   },
   "devDependencies": {
     "eslint": "^7.17.0",
