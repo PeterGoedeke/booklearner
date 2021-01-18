@@ -8,7 +8,7 @@ const getTextNodes = dom => {
     const walker = dom.window.document.createTreeWalker(body, nodeFilter, null, false)
 
     let n, a = []
-    while (n = walk.nextNode()) {
+    while (n = walker.nextNode()) {
         a.push(n)
     }
     return a
