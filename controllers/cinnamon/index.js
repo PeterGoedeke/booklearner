@@ -11,9 +11,7 @@ const { getFromCache, cacheParsedRequest } = require('./cache')
 const mongoose = require('mongoose')
 const ApiResponse = mongoose.model('ApiResponse')
 
-const textToTranslations = async (s, source, dest) => {
-    const words = textToWords(source, s)
-
+const wordsToTranslations = async (words, source, dest) => {
     const cacheResults = (await Promise.all(words.map(getFromCache(source, dest))))
         .filter(word => !word.wasCached || word.result.translation)
     const r = await partitionCachedUncached(cacheResults)
@@ -59,8 +57,14 @@ const makeRequest = curryN(3, async function (source, dest, q) {
                 'x-rapidapi-key': process.env.WEBIT_API_KEY
             }
         })
+        // console.log(response.data)
         const apiResponse = new ApiResponse(response.data)
-        apiResponse.save().catch(console.log)
+        apiResponse.save().catch(err => {
+            console.log('api response save error')
+            console.log(err)
+            console.log(response.data)
+            console.log(typeof response.data)
+        })
     
         return response.data
     }
@@ -69,4 +73,4 @@ const makeRequest = curryN(3, async function (source, dest, q) {
     }
 })
 
-module.exports = textToTranslations
+module.exports = wordsToTranslations
