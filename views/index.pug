@@ -1,7 +1,6 @@
 head
     title PDF2List
     script(src="disallow_duplicates.js")
-    link(rel="stylesheet" href="main.css")
     link(rel="icon" href="/favicon-16x16.png" sizes="16x16" type="image/png")
     link(rel="icon" href="/favicon-32x32.png" sizes="32x32" type="image/png")
 
@@ -11,6 +10,7 @@ form(action="submit" method="POST" enctype="multipart/form-data")
     input(type="file" name="file")
     input(type="text" name="text" placeholder="Alternatively, paste text here...")
     input(type="text" name="url" placeholder="Or, paste a url here...")
+    input(type="text" name="blacklist" placeholder="Paste words you don't want here...")
 
     label(for="source") Source: 
     select(name="source")

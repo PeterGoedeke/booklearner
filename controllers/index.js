@@ -1,10 +1,11 @@
 // libraries used for pdf loading and processing
 const formidable = require('formidable')
-const fs = require('fs');
-const pdf = require('pdf-parse');
+const fs = require('fs')
+const pdf = require('pdf-parse')
 
 const translate = require('./cinnamon')
 const parseWebsite = require('./cinnamon/parseWebsite')
+const { textToWords } = require('./cinnamon/parseText')
 
 function translatePDF(req, res) {
     const form = formidable({ multiples: true })
@@ -19,7 +20,8 @@ function translatePDF(req, res) {
                 }
             })
         }
-        
+        const blacklist = new Set(fields.blacklist ? textToWords(fields.source, fields.blacklist) : [])
+
         const inputs = [fields.text, files.file.type == 'application/pdf', fields.url].filter(i => i)
         if (inputs.length == 0) {
             return res.status(400).render('error', {
@@ -40,25 +42,32 @@ function translatePDF(req, res) {
             })
         }
         
-        let vocabulary
+        let words
         if (files.file.type == 'application/pdf') {
-            fs.readFile(toTranslate.path, async (err, data) => {
-                try {
-                    const result = await pdf(data)
-                    vocabulary = await translate(result.text, fields.source, fields.dest)
-                }
-                catch (e) {
-                    console.log(e);
-                }
-            });
+            try {
+                const data = await fs.promises.readFile(files.file.path)
+                const result = await pdf(data)
+                words = textToWords(fields.source, result.text)
+            }
+            catch (e) {
+                console.log(e)
+            }
         }
         else if (fields.text) {
-            vocabulary = await translate(fields.text, fields.source, fields.dest)
+            words = textToWords(fields.source, fields.text)
         }
         else {
-            const text = parseWebsite(fields.url)
-            vocabulary = await translate(text, fields.source, fields.dest)
+            try {
+                const text = await parseWebsite(fields.url)
+                words = textToWords(fields.source, text)
+            }
+            catch (e) {
+                console.log(e)
+            }
         }
+        const translateWords = words.filter(word => !blacklist.has(word))
+
+        const vocabulary = await translate(translateWords, fields.source, fields.dest)
         return res.status(200)
             .attachment(`vocabulary.csv`)
             .send(vocabulary)
