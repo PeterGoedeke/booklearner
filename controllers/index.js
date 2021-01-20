@@ -6,12 +6,16 @@ const pdf = require('pdf-parse')
 const translate = require('./cinnamon')
 const parseWebsite = require('./cinnamon/parseWebsite')
 const { textToWords } = require('./cinnamon/parseText')
+const dictionary = require('./cinnamon/dictionary')
 
-function translatePDF(req, res) {
+const testInvalidLanguageFields = (validFields, fields) =>
+    !validFields.has(fields.source) || !validFields.has(fields.dest) || fields.source === fields.dest
+
+function translateController(req, res) {
     const form = formidable({ multiples: true })
     form.parse(req, async (err, fields, files) => {
-        const validFields = new Set(['en', 'es', 'de'])
-        if (!validFields.has(fields.source) || !validFields.has(fields.dest) || fields.source === fields.dest) {
+        const validFields = new Set(Object.getOwnPropertyNames(dictionary))
+        if (testInvalidLanguageFields(validFields, fields)) {
             return res.status(400).render('error', {
                 message: 'Invalid language fields.',
                 error: {
@@ -32,45 +36,66 @@ function translatePDF(req, res) {
                 }
             })
         }
-        if (inputs.length > 1) {
-            return res.status(400).render('error', {
-                message: 'Only one submission method may be used simultaneously.',
-                error: {
-                    status: 400,
-                    stack: 'Either submit a pdf, enter text, or enter a url.'
-                }
-            })
-        }
-        
-        let words
+        let words = []
         if (files.file.type == 'application/pdf') {
             try {
                 const data = await fs.promises.readFile(files.file.path)
                 const result = await pdf(data)
-                words = textToWords(fields.source, result.text)
+                if (result.text) {
+                    words = textToWords(fields.source, result.text)
+                }
             }
             catch (e) {
                 console.log(e)
+                return res.status(500)
+                    .render('error', {
+                        message: 'Failed to parse document',
+                        error: {
+                            status: 500,
+                            stack: e
+                        }
+                    })
             }
         }
-        else if (fields.text) {
-            words = textToWords(fields.source, fields.text)
+        if (fields.text) {
+            words = words.concat(textToWords(fields.source, fields.text))
         }
-        else {
+        if (fields.url) {
             try {
                 const text = await parseWebsite(fields.url)
-                words = textToWords(fields.source, text)
+                if (text != null) {
+                    words = words.concat(textToWords(fields.source, text))
+                }
             }
             catch (e) {
                 console.log(e)
+                return res.status(400)
+                    .render('error', {
+                        message: 'Failed to parse URL',
+                        error: {
+                            status: 400,
+                            stack: e
+                        }
+                    })
             }
         }
         const translateWords = words.filter(word => !blacklist.has(word))
 
-        const vocabulary = await translate(translateWords, fields.source, fields.dest)
+        const translationResult = await translate(translateWords, fields.source, fields.dest)
+        if (translationResult.error) {
+            return res.status(translationResult.status)
+                .render('error', {
+                    message: `A ${translationResult.type} error has occurred in translation`,
+                    error: {
+                        status: translationResult.status,
+                        stack: translationResult.message
+                    }
+                })
+        }
+
         return res.status(200)
             .attachment(`vocabulary.csv`)
-            .send(vocabulary)
+            .send(translationResult)
             // if (!toTranslate || toTranslate.type != 'application/pdf') {
         //     return res.status(400).render('error', {
         //         message: 'Either no file was submitted or the format of the submitted file was not supported.',
@@ -85,5 +110,5 @@ function translatePDF(req, res) {
 
 
 module.exports = {
-    translatePDF
+    translate: translateController
 }
