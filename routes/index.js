@@ -5,6 +5,6 @@ router.get('/', (req, res) => {
     res.render('index', {})
 })
 
-router.post('/submit', controller.translatePDF)
+router.post('/submit', controller.translate)
 
 module.exports = router
