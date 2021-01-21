@@ -14,15 +14,14 @@ form(action="submit" method="POST" enctype="multipart/form-data")
 
     label(for="source") Source: 
     select(name="source")
-        option(value="de") de
-        option(value="en") en
-        option(value="es") es
-
+        each val in supportedLanguages
+            option(value=val) #{val}
+        
     label(for="dest") Dest: 
     select(name="dest")
-        option(value="de") de
-        option(value="en" selected) en
-        option(value="es") es
+        each val, index in supportedLanguages
+            option(value=val selected= index == 2) #{val}
+    
     input(type="submit")
 
 div
