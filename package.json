@@ -29,6 +29,8 @@
     "pdf-parse": "^1.1.1",
     "pug": "^3.0.0",
     "ramda": "^0.27.1",
+    "russian-words": "^1.0.1",
+    "stopword": "^1.0.6",
     "url-validator": "^2.0.3",
     "xregexp": "^4.4.1"
   },
