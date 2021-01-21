@@ -1,3 +1,6 @@
+// library dependencies
+const { concat } = require('ramda')
+
 // libraries used for pdf loading and processing
 const formidable = require('formidable')
 const fs = require('fs')
@@ -7,6 +10,7 @@ const translate = require('./cinnamon')
 const parseWebsite = require('./cinnamon/parseWebsite')
 const { textToWords } = require('./cinnamon/parseText')
 const dictionary = require('./cinnamon/dictionary')
+const sw = require('stopword')
 
 const testInvalidLanguageFields = (validFields, fields) =>
     !validFields.has(fields.source) || !validFields.has(fields.dest) || fields.source === fields.dest
@@ -24,7 +28,11 @@ function translateController(req, res) {
                 }
             })
         }
-        const blacklist = new Set(fields.blacklist ? textToWords(fields.source, fields.blacklist) : [])
+        const blacklist = new Set(concat(
+            fields.blacklist ? textToWords(fields.source, fields.blacklist) : [],
+            fields.stop ? sw[fields.source] : []
+        ))
+        console.log(blacklist)
 
         const inputs = [fields.text, files.file.type == 'application/pdf', fields.url].filter(i => i)
         if (inputs.length == 0) {
@@ -80,7 +88,7 @@ function translateController(req, res) {
             }
         }
         const translateWords = words.filter(word => !blacklist.has(word))
-
+        
         const translationResult = await translate(translateWords, fields.source, fields.dest)
         if (translationResult.error) {
             return res.status(translationResult.status)
