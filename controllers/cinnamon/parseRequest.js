@@ -6,7 +6,7 @@ const addArticle = require('./addArticle')
 
 const parseRequest = curryN(2, (source, r) => r.data
     .map(t => [
-        source == 'de' ? addArticle.de(t.term) : t.term,
+        addArticle(source, t.term),
         (t.translations.length == 1
             ? !t.translations[0].untranslatable
                 ? t.translations[0].translation
