@@ -8,7 +8,8 @@ const pdf = require('pdf-parse')
 
 const translate = require('./cinnamon')
 const parseWebsite = require('./cinnamon/parseWebsite')
-const { textToWords } = require('./cinnamon/parseText')
+const { textToWords, countWords } = require('./cinnamon/parseText')
+const epubPathToWords = require('./cinnamon/parseEPUB')
 const dictionary = require('./cinnamon/dictionary')
 const sw = require('stopword')
 
@@ -32,9 +33,13 @@ function translateController(req, res) {
             fields.blacklist ? textToWords(fields.source, fields.blacklist) : [],
             fields.stop ? sw[fields.source] : []
         ))
-        console.log(blacklist)
+        const inputs = [
+            fields.text,
+            files.file.type == 'application/pdf',
+            files.file.type == 'application/epub+zip',
+            fields.url
+        ].filter(i => i)
 
-        const inputs = [fields.text, files.file.type == 'application/pdf', fields.url].filter(i => i)
         if (inputs.length == 0) {
             return res.status(400).render('error', {
                 message: 'Either submit a pdf, add text to be translated to the text field, or enter a url in the url field',
@@ -65,6 +70,23 @@ function translateController(req, res) {
                     })
             }
         }
+        else if (files.file.type == 'application/epub+zip') {
+            try {
+                words = words.concat(await epubPathToWords(fields.source, files.file.path))
+            }
+            catch (e) {
+                console.log(e)
+                return res.status(500)
+                    .render('error', {
+                        message: 'Failed to parse document',
+                        error: {
+                            status: 500,
+                            stack: e
+                        }
+                    })
+            }
+        }
+
         if (fields.text) {
             words = words.concat(textToWords(fields.source, fields.text))
         }
@@ -87,20 +109,19 @@ function translateController(req, res) {
                     })
             }
         }
-        const translateWords = words.filter(word => !blacklist.has(word))
-        
-        const translationResult = await translate(translateWords, fields.source, fields.dest)
+        const wordsToTranslate = words.filter(word => !blacklist.has(word))
+                
+        const translationResult = await translate(wordsToTranslate, fields.source, fields.dest)
         if (translationResult.error) {
             return res.status(translationResult.status)
-                .render('error', {
-                    message: `A ${translationResult.type} error has occurred in translation`,
-                    error: {
-                        status: translationResult.status,
-                        stack: translationResult.message
-                    }
-                })
+            .render('error', {
+                message: `A ${translationResult.type} error has occurred in translation`,
+                error: {
+                    status: translationResult.status,
+                    stack: translationResult.message
+                }
+            })
         }
-
         return res.status(200)
             .attachment(`vocabulary.csv`)
             .send(translationResult)

@@ -16,6 +16,7 @@
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",
     "dotenv": "^8.2.0",
+    "epub": "^1.2.1",
     "express": "~4.16.1",
     "formidable": "^1.2.2",
     "german-words": "^3.1.2",
@@ -31,6 +32,7 @@
     "ramda": "^0.27.1",
     "russian-words": "^1.0.1",
     "stopword": "^1.0.6",
+    "striptags": "^3.1.1",
     "url-validator": "^2.0.3",
     "xregexp": "^4.4.1"
   },
