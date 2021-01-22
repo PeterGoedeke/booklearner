@@ -1,3 +1,8 @@
+/**
+ * Translate a list of words and generate a CSV as output.
+ * Contains function for requesting translations from the api
+ */
+
 // library dependencies
 const axios = require('axios')
 const { partition, prop, curryN } = require('ramda')
@@ -12,21 +17,28 @@ const { getFromCache, cacheParsedRequest } = require('./cache')
 const mongoose = require('mongoose')
 const ApiResponse = mongoose.model('ApiResponse')
 
+/**
+ * 
+ * @param {String} words the words to be translated into a csv
+ * @param {String} source the language the words are in
+ * @param {String} dest the language the words are to be translated to
+ */
 const wordsToTranslations = async (words, source, dest) => {
     try {
+        // retrieve from the words and filter those which are 'dead words' (i.e. gibberish phrases)
         const cacheResults = (await Promise.all(words.map(getFromCache(source, dest))))
             .filter(word => !word.wasCached || word.result.translation)
 
         const r = partitionCachedUncached(cacheResults)
-        
         try {
             const responses = await Promise.all(r.uncachedAsQueries.map(
                 (v, i) => makeRequest(i * 500, source, dest, v)
             ))
-
             const parsedResults = responses.map(parseRequest(source))
 
             parsedResults.forEach(cacheParsedRequest(source, dest))
+
+            // remove the dead words from the words which were just parsed and combine to CSV
             const parsedResultsAsCSV = parsedResults
                 .map(l => l.filter(r => r[1]))
                 .filter(l => l.length != 0)
@@ -38,6 +50,7 @@ const wordsToTranslations = async (words, source, dest) => {
         }
         catch (e) {
             console.log(e)
+            // this error is likely because the api rejected the requests for some reason
             return {
                 error: true,
                 status: 502,
@@ -47,6 +60,7 @@ const wordsToTranslations = async (words, source, dest) => {
         }            
     }
     catch (e) {
+        // something is probably wrong with the database if this error occurs
         console.log(e)
         return {
             error: true,
@@ -57,9 +71,14 @@ const wordsToTranslations = async (words, source, dest) => {
     }
 }
 
+/**
+ * 
+ * @param {*} cacheResults 
+ */
 const partitionCachedUncached = cacheResults => {
     const [cached, uncached] = partition(r => r.wasCached, cacheResults)
     const cachedAsCSV = cached.map(c => c.result.text + ',' + c.result.translation).join('\n')
+    console.log(uncached.length)
     const uncachedAsQueries = wordsToQueries(uncached.map(prop('word')))
     
     return { cachedAsCSV, uncachedAsQueries }

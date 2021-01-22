@@ -1,3 +1,7 @@
+/**
+ * Cache words and retrieve words from the cache.
+ */
+
 // library dependencies
 const Word = require('mongoose').model('Word')
 const { curryN } = require('ramda')
@@ -5,6 +9,12 @@ const { curryN } = require('ramda')
 // dictionary dependencies
 const addArticle = require('./addArticle')
 
+/**
+ * Cache the result of a request to the api
+ * @param {String} source the language the request is being translated from
+ * @param {String} dest the language the request is being translated to
+ * @param {String} r the api response to be cached
+ */
 const cacheParsedRequest = curryN(3, (source, dest, r) => {
     r.forEach(t => {
         const word = new Word({
@@ -17,6 +27,12 @@ const cacheParsedRequest = curryN(3, (source, dest, r) => {
     })
 })
 
+/**
+ * Retrieve a previously cached word
+ * @param {String} source the language the request is being translated from
+ * @param {String} dest the language the request is being translated to
+ * @param {String} w the word to be retrieved from the cache
+ */
 const getFromCache = curryN(3, async (source, dest, w) => {
     const response = await Word.findOne({ source, dest, text: addArticle.de(w) })
     return {
