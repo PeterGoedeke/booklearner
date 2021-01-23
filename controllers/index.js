@@ -124,7 +124,7 @@ function translateController(req, res) {
         }
         return res.status(200)
             .attachment(`vocabulary.csv`)
-            .send(translationResult)
+            .send('\ufeff' + translationResult)
             // if (!toTranslate || toTranslate.type != 'application/pdf') {
         //     return res.status(400).render('error', {
         //         message: 'Either no file was submitted or the format of the submitted file was not supported.',
