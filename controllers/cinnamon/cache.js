@@ -34,7 +34,7 @@ const cacheParsedRequest = curryN(3, (source, dest, r) => {
  * @param {String} w the word to be retrieved from the cache
  */
 const getFromCache = curryN(3, async (source, dest, w) => {
-    const response = await Word.findOne({ source, dest, text: addArticle.de(w) })
+    const response = await Word.findOne({ source, dest, text: addArticle(source, w) })
     return {
         word: w,
         result: response,

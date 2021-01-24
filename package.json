@@ -7,6 +7,7 @@
     "s": "nodemon ./bin/www"
   },
   "dependencies": {
+    "@gxl/epub-parser": "^2.0.3",
     "@hapi/joi": "^17.1.1",
     "an-array-of-english-words": "^2.0.0",
     "an-array-of-german-words": "^1.2.0",
