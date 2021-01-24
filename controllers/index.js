@@ -8,9 +8,10 @@ const pdf = require('pdf-parse')
 
 const translate = require('./cinnamon')
 const parseWebsite = require('./cinnamon/parseWebsite')
-const { textToWords, countWords } = require('./cinnamon/parseText')
-const epubPathToWords = require('./cinnamon/parseEPUB')
+const { countWords, uniq, parseText } = require('./cinnamon/parseText')
+const epubPathToText = require('./cinnamon/parseEPUB')
 const dictionary = require('./cinnamon/dictionary')
+const addArticle = require('./cinnamon/addArticle')
 const sw = require('stopword')
 
 const testInvalidLanguageFields = (validFields, fields) =>
@@ -30,7 +31,7 @@ function translateController(req, res) {
             })
         }
         const blacklist = new Set(concat(
-            fields.blacklist ? textToWords(fields.source, fields.blacklist) : [],
+            fields.blacklist ? parseText(fields.source, fields.blacklist) : [],
             fields.stop ? sw[fields.source] : []
         ))
         const inputs = [
@@ -49,14 +50,12 @@ function translateController(req, res) {
                 }
             })
         }
-        let words = []
+        const texts = []
         if (files.file.type == 'application/pdf') {
             try {
                 const data = await fs.promises.readFile(files.file.path)
                 const result = await pdf(data)
-                if (result.text) {
-                    words = textToWords(fields.source, result.text)
-                }
+                texts.push(result.text)
             }
             catch (e) {
                 console.log(e)
@@ -72,7 +71,8 @@ function translateController(req, res) {
         }
         else if (files.file.type == 'application/epub+zip') {
             try {
-                words = words.concat(await epubPathToWords(fields.source, files.file.path))
+                const text = await epubPathToText(files.file.path)
+                texts.push(text)
             }
             catch (e) {
                 console.log(e)
@@ -88,13 +88,13 @@ function translateController(req, res) {
         }
 
         if (fields.text) {
-            words = words.concat(textToWords(fields.source, fields.text))
+            texts.push(fields.text)
         }
         if (fields.url) {
             try {
                 const text = await parseWebsite(fields.url)
                 if (text != null) {
-                    words = words.concat(textToWords(fields.source, text))
+                    texts.push(text)
                 }
             }
             catch (e) {
@@ -109,8 +109,9 @@ function translateController(req, res) {
                     })
             }
         }
-        const wordsToTranslate = words.filter(word => !blacklist.has(word))
-                
+        const words = parseText(fields.source, texts.filter(t => t).join('\n'))
+        const wordsToTranslate = uniq(words).filter(word => !blacklist.has(word))
+
         const translationResult = await translate(wordsToTranslate, fields.source, fields.dest)
         if (translationResult.error) {
             return res.status(translationResult.status)
@@ -122,9 +123,15 @@ function translateController(req, res) {
                 }
             })
         }
+        if (fields.freq) {
+            const counts = countWords(words.map(word => addArticle(fields.source, word)))
+            translationResult.forEach(t => t.push(counts[t[0]]))
+        }
+        const csv = translationResult.map(r => r.join(',')).join('\n')
+        
         return res.status(200)
             .attachment(`vocabulary.csv`)
-            .send('\ufeff' + translationResult)
+            .send('\ufeff' + csv)
             // if (!toTranslate || toTranslate.type != 'application/pdf') {
         //     return res.status(400).render('error', {
         //         message: 'Either no file was submitted or the format of the submitted file was not supported.',

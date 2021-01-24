@@ -39,14 +39,15 @@ const wordsToTranslations = async (words, source, dest) => {
             parsedResults.forEach(cacheParsedRequest(source, dest))
 
             // remove the dead words from the words which were just parsed and combine to CSV
-            const parsedResultsAsCSV = parsedResults
+            const parsedResultsFormatted = parsedResults
                 .map(l => l.filter(r => r[1]))
                 .filter(l => l.length != 0)
-                .map(parsedRequestToCSV)
-                .join('\n')
-            return parsedResultsAsCSV.length != 0
-                ? parsedResultsAsCSV + '\n' + r.cachedAsCSV
-                : r.cachedAsCSV
+                // .map(parsedRequestToCSV)
+                // .join('\n')
+            return parsedResultsFormatted.length != 0
+                // ? parsedResultsAsCSV + '\n' + r.cached
+                ? parsedResultsFormatted.concat(r.cached)
+                : r.cached
         }
         catch (e) {
             console.log(e)
@@ -76,12 +77,12 @@ const wordsToTranslations = async (words, source, dest) => {
  * @param {*} cacheResults 
  */
 const partitionCachedUncached = cacheResults => {
-    const [cached, uncached] = partition(r => r.wasCached, cacheResults)
-    const cachedAsCSV = cached.map(c => c.result.text + ',' + c.result.translation).join('\n')
-    console.log(uncached.length)
+    const [cachedResult, uncached] = partition(r => r.wasCached, cacheResults)
+    // const cachedAsCSV = cached.map(c => c.result.text + ',' + c.result.translation).join('\n')
+    const cached = cachedResult.map(c => [c.result.text, c.result.translation])
     const uncachedAsQueries = wordsToQueries(uncached.map(prop('word')))
     
-    return { cachedAsCSV, uncachedAsQueries }
+    return { cached, uncachedAsQueries }
 }
 
 ;(async function() {
@@ -91,7 +92,6 @@ const partitionCachedUncached = cacheResults => {
 const delay = util.promisify(setTimeout)
 
 const makeRequest = curryN(4, async function (time, source, dest, q) {
-    console.log('setting delay of ' + time + ' milliseconds')
     await delay(time)
     console.log(`Requesting word ${q} in ${source} to ${dest}`)
     const response = await axios.get(process.env.WEBIT_URL, {
@@ -108,7 +108,6 @@ const makeRequest = curryN(4, async function (time, source, dest, q) {
             'x-rapidapi-key': process.env.WEBIT_API_KEY
         }
     })
-    // console.log(response.data)
     const apiResponse = new ApiResponse(response.data)
     apiResponse.save().catch(err => {
         console.log('api response save error')
