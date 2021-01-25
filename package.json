@@ -32,6 +32,7 @@
     "pug": "^3.0.0",
     "ramda": "^0.27.1",
     "russian-words": "^1.0.1",
+    "socket.io": "^3.1.0",
     "stopword": "^1.0.6",
     "striptags": "^3.1.1",
     "url-validator": "^2.0.3",

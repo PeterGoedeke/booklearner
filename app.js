@@ -12,6 +12,8 @@ require('./models/db')
 const indexRouter = require('./routes/index')
 
 const app = express()
+app.server = require('http').Server(app)
+require('./socket')(app.server)
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'))
