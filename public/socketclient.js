@@ -14,7 +14,15 @@ form.addEventListener('submit', function(event) {
     request.open('POST', url, true)
     request.onload = function() { // request successful
     // we can use server response to our request now
-        console.log(request.responseText)
+    
+        try {
+            const response = JSON.parse(request.responseText)
+            console.log(response)
+        }
+        catch (e) {
+            document.open();
+            document.write(request.responseText);
+        }
     }
 
     request.onerror = function() {
@@ -22,7 +30,7 @@ form.addEventListener('submit', function(event) {
     }
 
     request.send(new FormData(event.target)) // create FormData from form that triggered event
-    event.preventDefault()
+    // event.preventDefault()
 
     return true
 })
