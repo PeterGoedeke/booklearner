@@ -49,6 +49,10 @@ socket.on('words', data => {
     console.log(data)
 })
 
+socket.on('queue', index => {
+    console.log(index)
+})
+
 socket.on('disconnect', () => {
     socket.removeAllListeners()
 })

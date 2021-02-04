@@ -104,6 +104,9 @@ const translationQueue = (function() {
         active = false
         console.log('ending a run for legitimate reasons...')
         console.log(csv)
+
+        queue.forEach((item, index) => io.to(item[4]).emit('queue', index + 1))
+
         return run()
     }
     return (words, source, dest, freq, id) => {
