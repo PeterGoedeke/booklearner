@@ -7,11 +7,13 @@
 const axios = require('axios')
 const { partition, prop, curryN } = require('ramda')
 const util = require('util')
+const io = global.io
 
 // dependencies from project
-const { wordsToQueries } = require('./parseText')
-const { parseRequest, parsedRequestToCSV } = require('./parseRequest')
+const { wordsToQueries, countWords } = require('./parseText')
+const { parseRequest } = require('./parseRequest')
 const { getFromCache, cacheParsedRequest } = require('./cache')
+const addArticle = require('./addArticle')
 
 // mongoose dependencies
 const mongoose = require('mongoose')
@@ -36,7 +38,7 @@ const wordsToTranslations = async (words, source, dest) => {
             ))
             const parsedResults = responses.map(parseRequest(source))
 
-            parsedResults.forEach(cacheParsedRequest(source, dest))
+            await Promise.all(parsedResults.map(cacheParsedRequest(source, dest)))
 
             // remove the dead words from the words which were just parsed and combine to CSV
             const parsedResultsFormatted = parsedResults
@@ -72,6 +74,45 @@ const wordsToTranslations = async (words, source, dest) => {
     }
 }
 
+const translationQueue = (function() {
+    const queue = []
+    let active = false
+    
+    const run = async () => {
+        if (queue.length == 0 || active) {
+            return
+        }
+        console.log('starting a run...')
+        active = true
+
+        const [words, source, dest, freq, id] = queue.shift()
+
+        const result = await wordsToTranslations(words, source, dest)
+        if (result.error) {
+            io.to(id).emit('error', JSON.stringify(result))
+            active = false
+            console.log('ending a run due to error...')
+            return run()
+        }
+        if (freq) {
+            const counts = countWords(words.map(word => addArticle(source, word)))
+            result.forEach(t => t.push(counts[t[0]]))
+        }
+        const csv = '\ufeff' + result.map(r => r.join(',')).join('\n')
+
+        io.to(id).emit('words', csv)
+        active = false
+        console.log('ending a run for legitimate reasons...')
+        console.log(csv)
+        return run()
+    }
+    return (words, source, dest, freq, id) => {
+        queue.push([words, source, dest, freq, id])
+        run()
+        return queue.length
+    }
+})()
+
 /**
  * 
  * @param {*} cacheResults 
@@ -85,10 +126,7 @@ const partitionCachedUncached = cacheResults => {
     return { cached, uncachedAsQueries }
 }
 
-;(async function() {
-    // console.log('hello', await textToTranslations('gehen Gehen hund Hund', 'de', 'en'))
-    // console.log(await textToTranslations('yeetyeet Hund hund', 'de', 'en'))
-})()
+
 const delay = util.promisify(setTimeout)
 
 const makeRequest = curryN(4, async function (time, source, dest, q) {
@@ -118,4 +156,4 @@ const makeRequest = curryN(4, async function (time, source, dest, q) {
     return response.data
 })
 
-module.exports = wordsToTranslations
+module.exports = translationQueue

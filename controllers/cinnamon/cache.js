@@ -16,15 +16,17 @@ const addArticle = require('./addArticle')
  * @param {String} r the api response to be cached
  */
 const cacheParsedRequest = curryN(3, (source, dest, r) => {
-    r.forEach(t => {
-        const word = new Word({
-            source,
-            dest,
-            text: t[0],
-            translation: t[1]
-        })
-        word.save().catch(console.log)
-    })
+    return Promise.all(
+        r.map(t => {
+            const word = new Word({
+                source,
+                dest,
+                text: t[0],
+                translation: t[1]
+            })
+            return word.save()
+        }
+    ))
 })
 
 /**

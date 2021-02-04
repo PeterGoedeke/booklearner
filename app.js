@@ -9,11 +9,12 @@ const bodyParser = require('body-parser');
 
 require('./models/db')
 
-const indexRouter = require('./routes/index')
 
 const app = express()
 app.server = require('http').Server(app)
-require('./socket')(app.server)
+global.io = require('socket.io')(app.server)
+// require('./socket')(app.server)
+const indexRouter = require('./routes/index')
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'))

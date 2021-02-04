@@ -112,27 +112,12 @@ function translateController(req, res) {
         const words = parseText(fields.source, texts.filter(t => t).join('\n'))
         const wordsToTranslate = uniq(words).filter(word => !blacklist.has(word))
 
-        const translationResult = await translate(wordsToTranslate, fields.source, fields.dest)
-        if (translationResult.error) {
-            return res.status(translationResult.status)
-            .render('error', {
-                message: `A ${translationResult.type} error has occurred in translation`,
-                error: {
-                    status: translationResult.status,
-                    stack: translationResult.message
-                }
-            })
-        }
-        if (fields.freq) {
-            const counts = countWords(words.map(word => addArticle(fields.source, word)))
-            translationResult.forEach(t => t.push(counts[t[0]]))
-        }
-        const csv = translationResult.map(r => r.join(',')).join('\n')
+        const queuePosition = await translate(
+            wordsToTranslate, fields.source, fields.dest, fields.freq, fields.socketid
+        )
+        return res.status(200).json(JSON.stringify({ queuePosition }))
         
-        return res.status(200)
-            .attachment(`vocabulary.csv`)
-            .send('\ufeff' + csv)
-            // if (!toTranslate || toTranslate.type != 'application/pdf') {
+        // if (!toTranslate || toTranslate.type != 'application/pdf') {
         //     return res.status(400).render('error', {
         //         message: 'Either no file was submitted or the format of the submitted file was not supported.',
         //         error: {
