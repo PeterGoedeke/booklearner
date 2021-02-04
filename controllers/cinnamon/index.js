@@ -109,7 +109,17 @@ const translationQueue = (function() {
 
         return run()
     }
-    return (words, source, dest, freq, id) => {
+    return async (words, source, dest, freq, id) => {
+        const cacheResults = (await Promise.all(words.map(getFromCache(source, dest))))
+            .filter(word => !word.wasCached || word.result.translation)
+        
+        const result = partitionCachedUncached(cacheResults)
+        if (result.cached.length == words.length) {
+            const csv = '\ufeff' + result.cached.map(r => r.join(',')).join('\n')
+            io.to(id).emit('words', csv)
+            return 0
+        }
+
         queue.push([words, source, dest, freq, id])
         run()
         return queue.length
