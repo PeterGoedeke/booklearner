@@ -1,6 +1,6 @@
 head
     title PDF2List
-    script(src="disallow_duplicates.js")
+    script(src="/socket.io/socket.io.js")
     link(rel="icon" href="/favicon-16x16.png" sizes="16x16" type="image/png")
     link(rel="icon" href="/favicon-32x32.png" sizes="32x32" type="image/png")
 
@@ -28,6 +28,10 @@ form(action="submit" method="POST" enctype="multipart/form-data")
     input(type="checkbox" name="freq")
     
     input(type="submit")
+
+footer
+    script(src="disallow_duplicates.js")
+    script(src="socketclient.js")
 
 div
     h1 How does it work?
