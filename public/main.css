@@ -1,35 +1,72 @@
-form {
-    height: 50vh;
+.title {
+    font-size: 3em;
+    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+    font-weight: bold;
+    text-align: center;
+    margin-top: 20px;
+}
+
+.one {
+    border: solid lightgrey 1px;
+    border-radius: 2.5vh;
+    width: 80vw;
+    margin: auto;
     display: flex;
-    flex-direction: row;
+    height: 100px;
+    justify-content: stretch;
+    align-items: center;
+    padding: 0 20px;
+}
+
+.one > * {
+    border: none;
+    border-right: solid grey 1px;
+    height: 75%;
+    flex-grow: 1;
+    margin: 0 2.5px;
+}
+
+.one:last-child() {
+    border-right: none;
+}
+
+.selector {
+    /* float: left; */
+    display: flex;
     justify-content: center;
-    align-items: center;   
-    flex-wrap: wrap;
-    align-content: center;
+    align-items: center;
+    flex-direction: column;
 }
-
-input, select {
-    width: 95%;
-    box-sizing: border-box;
-    border-radius: 5px;
-    background-color: aquamarine;
-    height: 10vw;
-    font-size: 200%;   
-}
-select {
-    width: 20%;
-    margin: 1vh 0;
-}
-
-option {
+.selector > * {
+    display: block;
     text-align: center;
 }
 
-label {
-    font-size: 200%;
+.selector > *, .two > *, h1 {
+    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
 }
 
-body {
-    background-color: lightblue;
-    overflow: hidden;
+.two {
+    margin-left: 13vw;
+}
+
+.button {
+    background-color: rgb(30,129,176);
+    color: white;
+    border-radius: 20px;
+    height: 50%;
+}
+
+h1, p {
+    text-align: center;
+}
+
+p {
+    font-family: serif;
+    width: 80%;
+    margin: 0 auto;
+}
+
+.queue {
+    display: none;
 }
