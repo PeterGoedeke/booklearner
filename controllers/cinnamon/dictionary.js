@@ -4,5 +4,6 @@ const en = new Set(require('an-array-of-english-words'))
 const ru = new Set(require('russian-words'))
 
 module.exports = {
-    de, es, en, ru
+    // de, es, en, ru
+    de, en, es
 }
