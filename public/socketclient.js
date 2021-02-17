@@ -9,7 +9,7 @@ form.addEventListener('submit', function(event) {
     identifier.name = 'socketid'
     form.appendChild(identifier)
 
-    const url = 'http://localhost:3000/submit'
+    const url = location.protocol + '//' + window.location.host + '/submit'
     const request = new XMLHttpRequest()
     request.open('POST', url, true)
     request.onload = function() { // request successful
