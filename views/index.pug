@@ -1,38 +1,62 @@
 head
-    title PDF2List
+    title BookLearner
     script(src="/socket.io/socket.io.js")
     link(rel="icon" href="/favicon-16x16.png" sizes="16x16" type="image/png")
     link(rel="icon" href="/favicon-32x32.png" sizes="32x32" type="image/png")
+    link(rel="stylesheet" href="/main.css")
 
-div PDF to vocabulary list
+div(class="title") BookLearner
 
 form(action="submit" method="POST" enctype="multipart/form-data")
-    input(type="file" name="file")
-    input(type="text" name="text" placeholder="Alternatively, paste text here...")
-    input(type="text" name="url" placeholder="Or, paste a url here...")
-    input(type="text" name="blacklist" placeholder="Paste words you don't want here...")
+    div(class="two")
+        label(for="stop") Remove stopwords:
+        input(type="checkbox" name="stop")
+        label(for="freq") Show frequency:
+        input(type="checkbox" name="freq")
 
-    label(for="source") Source: 
-    select(name="source")
-        each val in supportedLanguages
-            option(value=val) #{val}
-        
-    label(for="dest") Dest: 
-    select(name="dest")
-        each val, index in supportedLanguages
-            option(value=val selected= index == 2) #{val}
+    div(class="one")
+        input(type="file" name="file" class="file" style="display: none;")
+        input(type="button" value="Browse..." onclick="document.querySelector('.file').click()" class="button")
+        textarea(name="text" placeholder="Alternatively, paste text here...")
+        textarea(name="url" placeholder="Or, paste a url here...")
+        textarea(name="blacklist" placeholder="Paste words you don't want here...")
+
+        div(class="selector")
+            label(for="source") From
+            select(name="source")
+                each val in supportedLanguages
+                    option(value=val) #{val}
+
+        div(class="selector")
+            label(for="dest") To
+            select(name="dest")
+                each val, index in supportedLanguages
+                    option(value=val selected= index == 1) #{val}
+        input(type="submit" class="button")
     
-    label(for="stop") Remove stopwords:
-    input(type="checkbox" name="stop")
-    label(for="freq") Show frequency:
-    input(type="checkbox" name="freq")
-    
-    input(type="submit")
 
 footer
     script(src="disallow_duplicates.js")
     script(src="socketclient.js")
 
+div(class="queue")
+    h1 Queue position:
+    p(class="queue_index") 0
+
 div
+    h1 What does this tool do?
+    p This tool allows you to take an entire book or article and have it turned into a vocabulary list which you can practise. It was made to reduce the time language learners spend figuring out which words to learn and the time wasted in creating lists to practise from.
     h1 How does it work?
     p You upload a PDF file, select the language that the file is in and the language that you wish the output vocabulary list to be in, and then wait for a csv to be downloaded to your computer. This csv can then be given to a service such as Quizlet, which could be used to practise the vocabulary list or to print it.
+
+    p If the service is particularly busy you may have to wait in the queue for your translations.
+    h1 How can I help?
+    p It is quite expensive to keep this tool running, as translations cost a reasonable price to buy. You can help support the operation of this website 
+        a(href="https://www.buymeacoffee.com/petergoedeke") here.
+    p If no one donates then it won't be possible for me to keep this online :(
+    p No money will be used for any purposes other than to keep this website operational.
+    p On a non-money related note, it would be great if any of who you appreciate this tool could give the github repository a star over 
+        a(href="https://github.com/PeterGoedeke/flashcards") here.
+    
+    h1 Can you add support for another language?
+    p It's very likely that I would be able to add support for the language you are thinking of. The catch is that each additional language will cost me more money, so I'll add more languages if I get enough donations to cover costs.
