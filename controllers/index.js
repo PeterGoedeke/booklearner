@@ -110,7 +110,9 @@ function translateController(req, res) {
             }
         }
         const words = parseText(fields.source, texts.filter(t => t).join('\n'))
-        const wordsToTranslate = uniq(words).filter(word => !blacklist.has(word))
+        const wordsToTranslate = uniq(words)
+            .filter(word => !blacklist.has(word))
+            .slice(0, 100)
 
         const queuePosition = await translate(
             wordsToTranslate, fields.source, fields.dest, fields.freq, fields.socketid
