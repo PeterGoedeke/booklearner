@@ -57,8 +57,11 @@ socket.on('words', data => {
     console.log(data)
 })
 
+const queueIndex = document.querySelector('.queue_index')
+const container = document.querySelector('.queue')
 socket.on('queue', index => {
-    console.log(index)
+    container.display = 'block'
+    queueIndex.textContent = index
 })
 
 socket.on('disconnect', () => {
