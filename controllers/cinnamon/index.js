@@ -115,6 +115,10 @@ const translationQueue = (function() {
         
         const result = partitionCachedUncached(cacheResults)
         if (result.cached.length == words.length) {
+            if (freq) {
+                const counts = countWords(words.map(word => addArticle(source, word)))
+                result.cached.forEach(t => t.push(counts[t[0]]))
+            }
             const csv = '\ufeff' + result.cached.map(r => r.join(',')).join('\n')
             io.to(id).emit('words', csv)
             return 0
