@@ -1,6 +1,15 @@
 head
     title BookLearner
     script(src="/socket.io/socket.io.js")
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    script(async src="https://www.googletagmanager.com/gtag/js?id=G-82LCNP4S1B")
+    script.
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-82LCNP4S1B');
+
     link(rel="icon" href="/favicon-16x16.png" sizes="16x16" type="image/png")
     link(rel="icon" href="/favicon-32x32.png" sizes="32x32" type="image/png")
     link(rel="stylesheet" href="/main.css")
@@ -47,7 +56,7 @@ div
     h1 What does this tool do?
     p This tool allows you to take an entire book or article and have it turned into a vocabulary list which you can practise. It was made to reduce the time language learners spend figuring out which words to learn and the time wasted in creating lists to practise from.
     h1 How does it work?
-    p You upload a PDF file, select the language that the file is in and the language that you wish the output vocabulary list to be in, and then wait for a csv to be downloaded to your computer. This csv can then be given to a service such as Quizlet, which could be used to practise the vocabulary list or to print it.
+    p You submit a PDF, EPUB, website URL, or plain text to the tool, select the language that the file is in and the language that you wish the output vocabulary list to be in, and then wait for a csv to be downloaded to your computer. This csv can then be given to a service such as Quizlet or Anki, which could be used to practise the vocabulary list or to print it.
 
     p If the service is particularly busy you may have to wait in the queue for your translations.
 
