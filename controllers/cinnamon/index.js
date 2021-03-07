@@ -33,7 +33,7 @@ const wordsToTranslations = async (words, source, dest) => {
 
         const r = partitionCachedUncached(cacheResults)
         try {
-            const responses = await Promise.all(r.uncachedAsQueries.map(
+            const responses = await Promise.all(r.uncachedAsQueries.slice(0, 1).map(
                 (v, i) => makeRequest(i * 500, source, dest, v)
             ))
             const parsedResults = responses.map(parseRequest(source))
