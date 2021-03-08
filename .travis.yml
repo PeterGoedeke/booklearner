@@ -17,10 +17,8 @@ deploy:
       branch: master
 
   - provider: elasticbeanstalk
-    access_key_id:
-      secure: $ACCESS_KEY
-    secret_access_key:
-      secure: "$SECRET_KEY"
+    access_key_id: $ACCESS_KEY
+    secret_access_key: $SECRET_KEY
     region: "ap-southeast-2"
     app: "booklearner-staging"
     env: "Booklearnerstaging-env"
