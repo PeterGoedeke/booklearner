@@ -85,7 +85,7 @@ const translationQueue = (function() {
         console.log('starting a run...')
         active = true
 
-        const [words, source, dest, freq, id] = queue.shift()
+        const [words, source, dest, counts, id] = queue.shift()
 
         const result = await wordsToTranslations(words, source, dest)
         if (result.error) {
@@ -94,8 +94,7 @@ const translationQueue = (function() {
             console.log('ending a run due to error...')
             return run()
         }
-        if (freq) {
-            const counts = countWords(words.map(word => addArticle(source, word)))
+        if (counts) {
             result.forEach(t => t.push(counts[t[0]]))
         }
         const csv = '\ufeff' + result.map(r => r.join(',')).join('\n')
@@ -109,14 +108,13 @@ const translationQueue = (function() {
 
         return run()
     }
-    return async (words, source, dest, freq, id) => {
+    return async (words, source, dest, counts, id) => {
         const cacheResults = (await Promise.all(words.map(getFromCache(source, dest))))
             .filter(word => !word.wasCached || word.result.translation)
         
         const result = partitionCachedUncached(cacheResults)
         if (result.cached.length == words.length) {
-            if (freq) {
-                const counts = countWords(words.map(word => addArticle(source, word)))
+            if (counts) {
                 result.cached.forEach(t => t.push(counts[t[0]]))
             }
             const csv = '\ufeff' + result.cached.map(r => r.join(',')).join('\n')

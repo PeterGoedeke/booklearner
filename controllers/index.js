@@ -113,8 +113,11 @@ function translateController(req, res) {
         const wordsToTranslate = uniq(words)
             .filter(word => !blacklist.has(word))
 
+        const counts = fields.freq ? countWords(words.map(word => addArticle(fields.source, word))) : null
+        console.log(counts, words)
+        
         const queuePosition = await translate(
-            wordsToTranslate, fields.source, fields.dest, fields.freq, fields.socketid
+            wordsToTranslate, fields.source, fields.dest, counts, fields.socketid
         )
         return res.status(200).json(JSON.stringify({ queuePosition }))
         
