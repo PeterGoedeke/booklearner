@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "start": "node ./bin/www",
+    "test": "echo \"Error: no test specified\" && exit 0",
     "s": "nodemon ./bin/www"
   },
   "dependencies": {

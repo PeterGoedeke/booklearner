@@ -108,7 +108,18 @@ const translationQueue = (function() {
 
         return run()
     }
-    return async (words, source, dest, counts, id) => {
+    return async (words, source, dest, counts, id, notranslation) => {
+        if (notranslation) {
+            if (counts) {
+                console.log(counts)
+
+                words = words.map(word => `${word},${counts[addArticle(source, word)]}`)
+            }
+            const csv = '\ufeff' + words.join('\n')
+            io.to(id).emit('words', csv)
+            return 0
+        }
+        
         const cacheResults = (await Promise.all(words.map(getFromCache(source, dest))))
             .filter(word => !word.wasCached || word.result.translation)
         
@@ -122,7 +133,7 @@ const translationQueue = (function() {
             return 0
         }
 
-        queue.push([words, source, dest, freq, id])
+        queue.push([words, source, dest, counts, id])
         run()
         return queue.length
     }
