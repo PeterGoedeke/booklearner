@@ -9,7 +9,6 @@
   },
   "dependencies": {
     "@gxl/epub-parser": "^2.0.3",
-    "@hapi/joi": "^17.1.1",
     "all-the-german-words": "^1.1.0",
     "an-array-of-english-words": "^2.0.0",
     "an-array-of-german-words": "^1.2.0",
@@ -26,7 +25,6 @@
     "german-words-dict": "^1.1.2",
     "http-errors": "~1.6.3",
     "jade": "~1.11.0",
-    "joi-objectid": "^3.0.1",
     "jsdom": "^16.4.0",
     "mongoose": "^5.10.13",
     "morgan": "~1.9.1",
