@@ -1,0 +1,76 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Example {
+  id   Int    @id @default(autoincrement())
+  name String
+}
+
+enum POS {
+  NOUN
+  VERB
+  OTHER
+}
+
+enum LANG {
+  DE
+  EN
+}
+
+model Resource {
+  id    Int     @id @default(autoincrement())
+  title String?
+  hash  String
+
+  words ResourcesWords[]
+}
+
+model ResourcesWords {
+  word   Word @relation(fields: [wordId], references: [id])
+  wordId Int
+
+  resource   Resource @relation(fields: [resourceId], references: [id])
+  resourceId Int
+
+  occurrences Int
+
+  @@id([wordId, resourceId])
+}
+
+model ExampleSentence {
+  id   Int    @id @default(autoincrement())
+  text String
+  lang LANG
+
+  words Word[]
+}
+
+model Word {
+  id               Int               @id @default(autoincrement())
+  text             String
+  pos              POS
+  lang             LANG
+  translations     Translation[]
+  exampleSentences ExampleSentence[]
+  resources        ResourcesWords[]
+
+  @@index([text, pos, lang])
+}
+
+model Translation {
+  text   String
+  lang   LANG
+  word   Word   @relation(fields: [wordId], references: [id])
+  wordId Int
+
+  @@id([wordId, lang])
+}

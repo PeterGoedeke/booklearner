@@ -1,0 +1,110 @@
+openapi: 3.0.0
+info:
+  version: '0.1'
+  title: Example API
+  description: |
+    # Changelog
+    - dd/MM/YY: API created
+servers:
+  - url: 'http://localhost:5000'
+paths:
+  '/examples':
+    get:
+      x-eov-operation-id: get
+      x-eov-operation-handler: example
+      description: Get a list of examples.
+      tags: [examples]
+      parameters:
+        - name: limit
+          in: query
+          required: false
+          description: The maximum number of examples which will be retrieved
+          schema:
+            type: integer
+            example: 5
+            minimum: 1
+            maximum: 10
+      responses:
+        '200':
+          description: The list of examples has been returned
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Example'
+        '400':
+          $ref: '#/components/responses/ParseError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+
+    post:
+      x-eov-operation-id: post
+      x-eov-operation-handler: example
+      description: Add another example
+      tags: [examples]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Example'
+      responses:
+        '200':
+          description: The example which was created
+          content:
+            application/json:
+              schema:
+                $ref:  "#/components/schemas/Example"
+        '400':
+          $ref:  "#/components/responses/NotFoundError"
+
+components:
+  schemas:
+    Example:
+      type: object
+      required:
+        - name
+      properties:
+        example_id:
+          type: integer
+          minimum: 0
+          description: The ID of the example.
+          example: 5
+        name:
+          type: string
+          description: The name of the example
+          example: Test
+    Error:
+      description: Schema which represents the JSON returned for errors and other conditions which expect status updates.
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          description: The status message.
+          example: Invalid request.
+          type: string
+  responses:
+    ParseError:
+      description: The server failed to parse the request.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    UnauthorizedError:
+      description: The user did not have the required privileges to access the resource.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            message: Unauthorized to access resource.
+    NotFoundError:
+      description: The requested resource was not found at the URI.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            message: Resource could not be found.

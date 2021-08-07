@@ -1,0 +1,9 @@
+{
+    "restartable": "rs",
+    "ignore": [".git", "node_modules/", "dist/", "coverage/"],
+    "exec": "ts-node",
+    "env": {
+        "NODE_ENV": "development"
+    },
+    "ext": "js,json,ts,yaml"
+}
