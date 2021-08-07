@@ -5,8 +5,8 @@ import express, { NextFunction, Request, Response } from 'express'
 import path from 'path'
 import * as OpenApiValidator from 'express-openapi-validator'
 import { ValidationError, ValidationErrorItem } from 'express-openapi-validator/dist/framework/types'
-import Logger from "./logger";
-import expressWinston from "express-winston";
+import Logger from './logger'
+import expressWinston from 'express-winston'
 
 const app = express()
 app.use(express.json())
@@ -19,6 +19,10 @@ app.use(expressWinston.logger({
     colorize: true
 }))
 
+
+app.set('views', path.join(__dirname, 'views'))
+app.set('view engine', 'pug')
+app.use(express.static(path.join(__dirname, 'public')))
 app.get('/', (req, res) => {
     return res.status(200).json({
         version: 'v0.1.0'

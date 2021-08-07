@@ -1,0 +1,37 @@
+head
+    title BookLearner
+    //- script(src="/socket.io/socket.io.js")
+
+    //- <!-- Global site tag (gtag.js) - Google Analytics -->
+    //- script(async src="https://www.googletagmanager.com/gtag/js?id=G-82LCNP4S1B")
+    //- script.
+        //- window.dataLayer = window.dataLayer || [];
+        //- function gtag(){dataLayer.push(arguments);}
+        //- gtag('js', new Date());
+        //- gtag('config', 'G-82LCNP4S1B');
+
+    //- link(rel="icon" href="/favicon-16x16.png" sizes="16x16" type="image/png")
+    //- link(rel="icon" href="/favicon-32x32.png" sizes="32x32" type="image/png")
+    //- link(rel="stylesheet" href="/main.css")
+
+div(class="title") BookLearner
+
+div(class="file_drop" ondrop="dropHandler(event)" ondragover="dragOverHandler(event)"
+style="border: solid black 1px; width: 200px; height: 100px;")
+    p Drag a file here
+        
+        //- div(class="selector")
+        //-     label(for="source") From
+        //-     select(name="source")
+        //-         each val in supportedLanguages
+        //-             option(value=val) #{val}
+
+        //- div(class="selector")
+        //-     label(for="dest") To
+        //-     select(name="dest")
+        //-         each val, index in supportedLanguages
+        //-             option(value=vzal selected= index == 1) #{val}
+        //- input(type="submit" class="button")
+    
+footer
+    script(src="main.js")
